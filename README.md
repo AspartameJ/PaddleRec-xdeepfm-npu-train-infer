@@ -63,8 +63,6 @@ paddle-npu-xdeepfm:infer \
 3. xdeepfm动态图转静态图  
 [参考链接](https://github.com/PaddlePaddle/PaddleRec/blob/master/doc/inference.md)
 4. xdeepfm静态图推理
-修改criteo_reader.py  
-![criteo_reader.py](resources/criteo_reader.png "criteo_reader.py")  
 推理
 ```
 python -u ../../../tools/paddle_infer.py --model_file=model_save_path/tostatic.pdmodel --params_file=model_save_path/tostatic.pdiparams --use_gpu=False --data_dir=data/sample_data/train --reader_file=criteo_reader.py --batchsize=1 --benchmark=False
