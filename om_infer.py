@@ -21,7 +21,8 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '..')))
 from paddle.io import DataLoader
 import argparse
 from ais_bench.infer.interface import InferSession
-
+import numpy as np
+from sklearn.metrics import roc_auc_score
 
 def parse_args():
 
@@ -56,21 +57,30 @@ def main(args):
 
     input_names = [input_node.name for input_node in session.get_inputs()]
     output_names = [session.get_outputs()[0].name]
-
+    click_list = []
+    results_all = []
     for batch_id, batch_data in enumerate(test_dataloader):
-        name_data_pair = dict(zip(input_names, batch_data))
+        click_list.append(batch_data[0])
+        name_data_pair = dict(zip(input_names, batch_data[1:]))
         input_data_list = []
         for name in input_names:
             input_data_list.append(name_data_pair[name].numpy())
-        pred_onnx = session.infer(input_data_list)   
+        pred_om = session.infer(input_data_list)
         results = []
         for name in output_names:
-            results.append(pred_onnx[0])
+            results.append(pred_om[0])
+        results_all.append(results)
+        '''
         for clicked in results:
             if clicked > 0.5:
                 print([1])
             else:
                 print([0])
+        '''
+    y = np.array(click_list).squeeze()
+    y_pred = np.array(results_all).squeeze()
+    auc_score = roc_auc_score(y,y_pred)
+    print(f'auc_score:{auc_score}')
 
 if __name__ == '__main__':
     args = parse_args()
